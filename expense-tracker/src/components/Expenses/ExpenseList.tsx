@@ -1,61 +1,46 @@
-import React from 'react'; 
-import { List, ListItem, ListItemText, Typography, Paper, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React from 'react';
+import { List, Typography, Box, CircularProgress } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useExpenses } from '../../hooks/useExpenses';
-import { useDeleteExpense } from '../../hooks/useExpenses'; // ⬅ add this
+import { useExpenses, useDeleteExpense } from '../../hooks/useExpenses';
+import ExpenseCard from './ExpenseCard';
+import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 
-const listVariants = {
-  hidden: { opacity: 0 },
-  visible: { 
-    opacity: 1,
-    transition: { staggerChildren: 0.1 }
+interface Props {
+  onEditExpense: (expense: any) => void;
+}
+
+export default function ExpenseList({ onEditExpense }: Props) {
+  const { data: expenses, isLoading, error } = useExpenses();
+  const deleteExpense = useDeleteExpense();
+
+  const handleDelete = (id: string) => {
+    if(window.confirm('Are you sure you want to delete this?')) {
+      deleteExpense.mutate(id);
+    }
+  };
+
+  if (isLoading) return <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress color="secondary" /></Box>;
+  if (error) return <Typography color="error">Error loading expenses.</Typography>;
+  if (!expenses || expenses.length === 0) {
+      return (
+        <Box sx={{ textAlign: 'center', p: 4, opacity: 0.7 }}>
+            <SentimentDissatisfiedIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+            <Typography variant="h6" color="text.secondary">No expenses yet.</Typography>
+            <Typography variant="body2" color="text.secondary">Time to spend some money!</Typography>
+        </Box>
+      )
   }
-};
-
-const itemVariants = {
-  hidden: { x: -20, opacity: 0 },
-  visible: { x: 0, opacity: 1 }
-};
-
-export default function ExpenseList() {
-  const { data: expenses, isLoading } = useExpenses();
-  const { mutate: deleteExpense } = useDeleteExpense(); // ⬅ hook
-
-  if (isLoading) return <Typography>Loading...</Typography>;
 
   return (
-    <List component={motion.ul} variants={listVariants} initial="hidden" animate="visible">
-      <AnimatePresence>
-        {expenses?.map((expense: any) => (
-          <motion.div 
+    <List sx={{ p: 0 }}>
+      <AnimatePresence mode='popLayout'>
+        {expenses.map((expense: any) => (
+          <ExpenseCard 
             key={expense.id} 
-            variants={itemVariants} 
-            layout 
-            exit={{ opacity: 0, x: 100 }}
-          >
-            <Paper sx={{ mb: 2, p: 1 }}>
-              <ListItem
-                secondaryAction={
-                  <IconButton 
-                    edge="end" 
-                    aria-label="delete"
-                    onClick={() => deleteExpense(expense.id)} // ✅ DELETE HERE
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                }
-              >
-                <ListItemText 
-                  primary={expense.description} 
-                  secondary={expense.date} 
-                />
-                <Typography variant="h6" color="secondary">
-                  ₹{expense.amount}
-                </Typography>
-              </ListItem>
-            </Paper>
-          </motion.div>
+            expense={expense} 
+            onEdit={onEditExpense} 
+            onDelete={handleDelete}
+          />
         ))}
       </AnimatePresence>
     </List>
