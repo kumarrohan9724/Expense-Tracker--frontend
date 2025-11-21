@@ -1,11 +1,13 @@
 import React from 'react';
 import { useExpenses } from '../../hooks/useExpenses';
 import { Paper, Typography, Box, Divider, Stack, Chip, useTheme } from '@mui/material';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+
 import CategoryIcon from '@mui/icons-material/Category';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PaidIcon from '@mui/icons-material/Paid';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+
 
 import { Expense } from '../../types';
 
@@ -56,15 +58,15 @@ export default function ExpenseAnalytics() {
         </Box>
         <Box>
           <Typography variant="subtitle2" color="textSecondary" mb={1}>Average Expense</Typography>
-          <Chip icon={<TrendingUpIcon />} label={`₹${summary.avg.toFixed(2)}`} color="secondary" sx={{ fontWeight: 700, fontSize: 18, mb: 1 }} />
+          <Chip icon={<ShowChartIcon />} label={`₹${summary.avg.toFixed(2)}`} color="secondary" sx={{ fontWeight: 700, fontSize: 18, mb: 1 }} />
         </Box>
         <Box>
           <Typography variant="subtitle2" color="textSecondary" mb={1}>Highest Expense</Typography>
-          <Chip icon={<TrendingUpIcon />} label={`₹${summary.max.toFixed(2)}`} sx={{ fontWeight: 700, fontSize: 18, mb: 1, bgcolor: '#f43f5e', color: '#fff' }} />
+          <Chip icon={<ShowChartIcon />} label={`₹${summary.max.toFixed(2)}`} sx={{ fontWeight: 700, fontSize: 18, mb: 1, bgcolor: '#f43f5e', color: '#fff' }} />
         </Box>
         <Box>
           <Typography variant="subtitle2" color="textSecondary" mb={1}>Lowest Expense</Typography>
-          <Chip icon={<TrendingUpIcon />} label={`₹${summary.min.toFixed(2)}`} sx={{ fontWeight: 700, fontSize: 18, mb: 1, bgcolor: '#10b981', color: '#fff' }} />
+          <Chip icon={<ShowChartIcon />} label={`₹${summary.min.toFixed(2)}`} sx={{ fontWeight: 700, fontSize: 18, mb: 1, bgcolor: '#10b981', color: '#fff' }} />
         </Box>
       </Stack>
       <Divider sx={{ mb: 3 }} />
