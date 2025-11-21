@@ -1,55 +1,90 @@
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
 
-// Deep dark background with neon accents
 let theme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: "dark",
     primary: {
-      main: '#8B5CF6', // Vivid Purple
-      light: '#A78BFA',
+      main: "#667eea",   // Indigo
+      light: "#764ba2",  // Soft Purple
     },
     secondary: {
-      main: '#EC4899', // Neon Pink
+      main: "#9f7aea",   // Neon Purple
     },
     background: {
-      default: '#09090b', // Very deep black/gray
-      paper: '#18181b',   // Slightly lighter for cards
+      default: "#0f0c29",  // Deep gradient base color
+      paper: "rgba(255,255,255,0.05)", // Glassmorphism card
     },
     text: {
-      primary: '#F4F4F5',
-      secondary: '#A1A1AA',
+      primary: "#ffffff",
+      secondary: "rgba(255,255,255,0.6)",
     },
   },
+
   typography: {
     fontFamily: '"Poppins", sans-serif',
-    h4: { fontWeight: 700, letterSpacing: '-1px' },
-    h6: { fontWeight: 600 },
-    button: { textTransform: 'none', fontWeight: 600 },
+    h4: { fontWeight: 700, letterSpacing: "0.5px" },
+    h5: { fontWeight: 600 },
+    button: { fontWeight: 700, textTransform: "none" }
   },
+
   shape: {
-    borderRadius: 16, // Super rounded corners
+    borderRadius: 16,
   },
+
   components: {
+    // Glassmorphism Paper Cards
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundImage: 'none', // Remove default MUI gradient
-          backgroundColor: 'rgba(24, 24, 27, 0.8)', // Semi-transparent
-          backdropFilter: 'blur(12px)', // Glassmorphism effect
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          background: "rgba(255,255,255,0.05)",
+          backdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.12)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         },
       },
     },
+
+    // Futuristic Gradient Button
     MuiButton: {
       styleOverrides: {
-        root: { borderRadius: 12, padding: '10px 24px' },
+        root: {
+          borderRadius: 14,
+          padding: "10px 24px",
+        },
         containedPrimary: {
-          // Gradients make buttons pop
-          background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-          boxShadow: '0 4px 15px rgba(139, 92, 246, 0.4)',
-          '&:hover': {
-             boxShadow: '0 6px 20px rgba(139, 92, 246, 0.6)',
-          }
+          background:
+            "linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6b46c1 100%)",
+          boxShadow: "0 4px 20px rgba(118, 75, 162, 0.5)",
+          transition: "0.3s ease",
+          "&:hover": {
+            transform: "translateY(-2px)",
+            background:
+              "linear-gradient(135deg, #764ba2 0%, #667eea 50%, #6b46c1 100%)",
+            boxShadow: "0 6px 24px rgba(118, 75, 162, 0.7)",
+          },
+        },
+      },
+    },
+
+    // Input Fields with translucent styling
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          background: "rgba(255,255,255,0.06)",
+          borderRadius: 12,
+          "& fieldset": { borderColor: "rgba(255,255,255,0.15)" },
+          "&:hover fieldset": { borderColor: "rgba(255,255,255,0.4)" },
+          "&.Mui-focused fieldset": { borderColor: "#764ba2" },
+        },
+        input: { color: "#fff" },
+      },
+    },
+
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          color: "rgba(255,255,255,0.6)",
+          "&.Mui-focused": { color: "#764ba2" },
         },
       },
     },
