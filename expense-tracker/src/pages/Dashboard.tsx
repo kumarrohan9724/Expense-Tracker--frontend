@@ -29,7 +29,7 @@ import ExpenseList from '../components/Expenses/ExpenseList';
 import ExpenseForm from '../components/Expenses/ExpenseForm';
 import SpendingChart from '../components/Charts/SpendingChart';
 import CategoryManager from '../components/Expenses/CategoryManager';
-import ExpenseAnalytics from '../components/ExpenseAnalytics';
+import ExpenseAnalytics from '../components/Expenses/ExpenseAnalytics';
 
 // Services
 import { supabase } from '../services/supabaseClient';

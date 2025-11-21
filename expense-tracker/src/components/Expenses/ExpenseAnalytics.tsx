@@ -1,5 +1,5 @@
 import React from 'react';
-import { useExpenses } from '../hooks/useExpenses';
+import { useExpenses } from '../../hooks/useExpenses';
 import { Paper, Typography, Box, Divider, Stack, Chip, useTheme } from '@mui/material';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -7,7 +7,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PaidIcon from '@mui/icons-material/Paid';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
-import { Expense } from '../types';
+import { Expense } from '../../types';
 
 function getSummary(expenses: Expense[]): { total: number; avg: number; max: number; min: number } {
   const total = expenses.reduce((sum: number, e: Expense) => sum + Number(e.amount), 0);
