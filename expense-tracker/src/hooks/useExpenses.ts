@@ -3,6 +3,10 @@ import { supabase } from '../services/supabaseClient';
 import { Expense } from '../types';
 import { useAuth } from '../context/AuthContext';
 
+
+// ==========================
+// 🔹 FETCH EXPENSES
+// ==========================
 export const useExpenses = () => {
   const { session } = useAuth();
 
@@ -11,16 +15,20 @@ export const useExpenses = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('expenses')
-        .select('*, categories(name)')
+        .select('id, amount, description, date, category_id, categories(name)')
         .order('date', { ascending: false });
-      
+
       if (error) throw error;
       return data;
     },
-    enabled: !!session // Only run if logged in
+    enabled: !!session
   });
 };
 
+
+// ==========================
+// 🔹 ADD EXPENSE
+// ==========================
 export const useAddExpense = () => {
   const queryClient = useQueryClient();
   const { session } = useAuth();
@@ -31,8 +39,33 @@ export const useAddExpense = () => {
         .from('expenses')
         .insert([{ ...newExpense, user_id: session?.user.id }])
         .select();
+
       if (error) throw error;
       return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses'] });
+    },
+  });
+};
+
+
+
+// ==========================
+// 🔹 DELETE EXPENSE
+// ==========================
+export const useDeleteExpense = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('expenses')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      return id;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses'] });

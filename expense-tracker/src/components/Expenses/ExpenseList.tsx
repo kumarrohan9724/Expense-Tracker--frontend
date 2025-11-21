@@ -1,8 +1,9 @@
-import React from 'react';
+import React from 'react'; 
 import { List, ListItem, ListItemText, Typography, Paper, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useExpenses } from '../../hooks/useExpenses';
+import { useDeleteExpense } from '../../hooks/useExpenses'; // ⬅ add this
 
 const listVariants = {
   hidden: { opacity: 0 },
@@ -19,6 +20,7 @@ const itemVariants = {
 
 export default function ExpenseList() {
   const { data: expenses, isLoading } = useExpenses();
+  const { mutate: deleteExpense } = useDeleteExpense(); // ⬅ hook
 
   if (isLoading) return <Typography>Loading...</Typography>;
 
@@ -26,19 +28,30 @@ export default function ExpenseList() {
     <List component={motion.ul} variants={listVariants} initial="hidden" animate="visible">
       <AnimatePresence>
         {expenses?.map((expense: any) => (
-          <motion.div key={expense.id} variants={itemVariants} layout exit={{ opacity: 0, x: 100 }}>
+          <motion.div 
+            key={expense.id} 
+            variants={itemVariants} 
+            layout 
+            exit={{ opacity: 0, x: 100 }}
+          >
             <Paper sx={{ mb: 2, p: 1 }}>
-              <ListItem secondaryAction={
-                <IconButton edge="end" aria-label="delete">
-                  <DeleteIcon />
-                </IconButton>
-              }>
+              <ListItem
+                secondaryAction={
+                  <IconButton 
+                    edge="end" 
+                    aria-label="delete"
+                    onClick={() => deleteExpense(expense.id)} // ✅ DELETE HERE
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                }
+              >
                 <ListItemText 
                   primary={expense.description} 
                   secondary={expense.date} 
                 />
                 <Typography variant="h6" color="secondary">
-                  ${expense.amount}
+                  ₹{expense.amount}
                 </Typography>
               </ListItem>
             </Paper>
