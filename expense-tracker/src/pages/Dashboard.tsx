@@ -255,57 +255,38 @@ export default function Dashboard() {
 
         {/* Main Content Grid (Chart and List) */}
         <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '7fr 5fr' },
-            gap: 3,
-            animation: `${fadeInUp} 0.6s ease-out 0.2s both`,
-          }}
-        >
-          {/* Left Column - Chart */}
-          <Paper
-            sx={{
-              p: { xs: 2, md: 3 },
-              borderRadius: 3,
-              background: 'rgba(255,255,255,0.04)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              minHeight: 400,
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 700, mb: 2.5, color: '#fff' }}
-            >
-              Spending Trends 📈
-            </Typography>
-            <SpendingChart />
-          </Paper>
+  sx={{
+    display: 'grid',
+    gridTemplateColumns: '1fr', // single column
+    gap: 3,
+    animation: `${fadeInUp} 0.6s ease-out 0.2s both`,
+  }}
+>
+  <Paper
+    sx={{
+      width: '100%',
+      p: { xs: 2, md: 3 },
+      borderRadius: 3,
+      background: 'rgba(255,255,255,0.04)',
+      backdropFilter: 'blur(10px)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      minHeight: 400,
+      display: 'flex',
+      flexDirection: 'column',
+    }}
+  >
+    <Typography
+      variant="h6"
+      sx={{ fontWeight: 700, mb: 2.5, color: '#fff' }}
+    >
+      Recent Activity 💸
+    </Typography>
+    <Box sx={{ flexGrow: 1, overflowY: 'auto', maxHeight: { md: 350 } }}>
+      <ExpenseList onEditExpense={handleOpenEdit} />
+    </Box>
+  </Paper>
+</Box>
 
-          {/* Right Column - Recent Activity */}
-          <Paper
-            sx={{
-              p: { xs: 2, md: 3 },
-              borderRadius: 3,
-              background: 'rgba(255,255,255,0.04)',
-              backdropFilter: 'blur(10px)',
-              border: '1px solid rgba(255,255,255,0.08)',
-              minHeight: 400,
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{ fontWeight: 700, mb: 2.5, color: '#fff' }}
-            >
-              Recent Activity 💸
-            </Typography>
-            <Box sx={{ flexGrow: 1, overflowY: 'auto', maxHeight: { md: 350 } }}>
-              <ExpenseList onEditExpense={handleOpenEdit} />
-            </Box>
-          </Paper>
-        </Box>
 
         {/* Analytics Section */}
         <Box sx={{ mt: 5, animation: `${fadeInUp} 0.6s ease-out 0.3s both` }}>
