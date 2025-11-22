@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Container,
   Typography,
-  Paper,
   Stack,
   Button,
   Dialog,
@@ -13,28 +12,69 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import { keyframes } from '@emotion/react';
 
 // Icons
 import AddIcon from '@mui/icons-material/AddRounded';
+import CategoryIcon from '@mui/icons-material/CategoryRounded';
+import TrendingUpIcon from '@mui/icons-material/TrendingUpRounded';
+import LogoutIcon from '@mui/icons-material/LogoutRounded';
+import PersonIcon from '@mui/icons-material/PersonRounded';
 
-import DownloadIcon from '@mui/icons-material/DownloadRounded';
-import SettingsIcon from '@mui/icons-material/SettingsRounded';
-
-// Components (Ensure these paths are correct in your project)
+// Components
 import ExpenseList from '../components/Expenses/ExpenseList';
 import ExpenseForm from '../components/Expenses/ExpenseForm';
 import CategoryManager from '../components/Expenses/CategoryManager';
 import ExpenseAnalytics from '../components/Expenses/ExpenseAnalytics';
-import { useExpenses } from '../hooks/useExpenses'; // Hook for data fetching
+import { useExpenses } from '../hooks/useExpenses';
 
-// Animations
+// Supabase
+import { supabase } from '../services/supabaseClient';
+
+// Clean Animations
 const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { 
+    opacity: 0; 
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0);
+  }
 `;
 
+const subtlePulse = keyframes`
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+`;
+
+const slideInRight = keyframes`
+  from { 
+    opacity: 0; 
+    transform: translateX(15px);
+  }
+  to { 
+    opacity: 1; 
+    transform: translateX(0);
+  }
+`;
+
+const textShimmer = keyframes`
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+`;
+
+const iconHover = keyframes`
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+`;
 
 // ---
 // Dashboard Component (Main)
@@ -48,10 +88,14 @@ export default function Dashboard() {
   const [isExpenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [isCategoryOpen, setCategoryOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState<any>(null);
-  const [isExporting, setIsExporting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [logoutAnchor, setLogoutAnchor] = useState<null | HTMLElement>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  // Calculate KPI values
- 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   // Handlers
   const handleOpenAdd = () => {
     setExpenseToEdit(null);
@@ -68,138 +112,209 @@ export default function Dashboard() {
     setTimeout(() => setExpenseToEdit(null), 200);
   };
 
-  const handleExportCSV = async () => {
-    setIsExporting(true);
-    // Simulate API call or file generation delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log('Exporting data:', expenses);
-    alert('Data successfully exported to CSV!');
-    setIsExporting(false);
+  const handleLogoutClick = (event: React.MouseEvent<HTMLElement>) => {
+    setLogoutAnchor(event.currentTarget);
+  };
+
+  const handleLogoutClose = () => {
+    setLogoutAnchor(null);
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await supabase.auth.signOut();
+    setIsLoggingOut(false);
   };
 
   return (
-    // Outer Box for dark background and min height
     <Box
       sx={{
-        backgroundColor: '#0f172a', // Dark background for professional aesthetic
+        backgroundColor: '#0f172a',
         minHeight: '100vh',
-        pt: { xs: 2, md: 4 },
+        pt: 2,
         pb: 4,
         color: '#fff',
       }}
     >
-      {/* Container setup for 100% width but with responsive padding */}
       <Container 
-        maxWidth={false} // Key change: removes max-width to use full screen width
-        sx={{ px: { xs: 2, sm: 3, md: 4 } }} // Adds crucial padding on sides
+        maxWidth={false}
+        sx={{ px: { xs: 2, sm: 3, md: 4 } }}
       >
         
-        {/* Header Section */}
+        {/* Compact Clean Header */}
         <Box
           sx={{
             display: 'flex',
             justifyContent: 'space-between',
-            alignItems: { xs: 'flex-start', md: 'center' },
-            flexDirection: { xs: 'column', md: 'row' },
-            gap: 3,
-            mb: 5,
-            animation: `${fadeInUp} 0.6s ease-out`,
+            alignItems: 'center',
+            mb: 4,
+            animation: mounted ? `${fadeInUp} 0.5s ease-out` : 'none',
           }}
         >
-          <Box>
-            <Typography
-              variant="h4"
+          {/* Left: Logo and Title */}
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 2,
+            }}
+          >
+            <Avatar
               sx={{
-                fontWeight: 800,
-                letterSpacing: '-1px',
-                mb: 0.5,
+                background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
+                width: 40,
+                height: 40,
+                animation: `${subtlePulse} 3s ease-in-out infinite`,
               }}
             >
-              Expense Dashboard 📊
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.6)' }}>
-              Track and manage your expenses efficiently
-            </Typography>
+              <TrendingUpIcon sx={{ fontSize: 20 }} />
+            </Avatar>
+            <Box>
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                  background: 'linear-gradient(90deg, #fff 0%, #8B5CF6 100%)',
+                  backgroundSize: '200% auto',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  animation: `${textShimmer} 3s linear infinite`,
+                }}
+              >
+                FinTrack
+              </Typography>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: 'rgba(255,255,255,0.6)',
+                }}
+              >
+                Track your expenses
+              </Typography>
+            </Box>
           </Box>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-            <Button
-              variant="outlined"
-              startIcon={<SettingsIcon />}
-              onClick={() => setCategoryOpen(true)}
-              sx={{
-                borderColor: 'rgba(255,255,255,0.2)',
-                color: '#fff',
-                textTransform: 'none',
-                borderRadius: 2,
-                '&:hover': {
-                  borderColor: '#8B5CF6',
-                  background: 'rgba(139,92,246,0.1)',
-                },
-              }}
-            >
-              Categories
-            </Button>
-            {/* Standard Button using the 'loading' prop */}
-            <Button
-              loading={isExporting as any} 
-              startIcon={!isExporting && <DownloadIcon />}
-              onClick={handleExportCSV}
-              variant="contained"
-              sx={{
-                background: 'linear-gradient(90deg, #10B981 0%, #06B6D4 100%)',
-                borderRadius: 2,
-                textTransform: 'none',
-                '&:hover': {
-                  opacity: 0.9,
-                }
-              }}
-            >
-              {isExporting ? 'Exporting...' : 'Export'}
-            </Button>
+
+          {/* Right: Action Buttons */}
+          <Stack direction="row" spacing={1}>
+            {/* Categories Button */}
+            <Tooltip title="Manage Categories">
+              <IconButton
+                onClick={() => setCategoryOpen(true)}
+                size="small"
+                sx={{
+                  color: 'rgba(255,255,255,0.8)',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: 2,
+                  '&:hover': {
+                    background: 'rgba(139, 92, 246, 0.1)',
+                    color: '#8B5CF6',
+                    animation: `${iconHover} 0.3s ease`,
+                  },
+                }}
+              >
+                <CategoryIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            </Tooltip>
+
+            {/* Logout Button */}
+            <Tooltip title="Logout">
+              <IconButton
+                onClick={handleLogoutClick}
+                size="small"
+                sx={{
+                  color: 'rgba(255,255,255,0.8)',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: 2,
+                  '&:hover': {
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    color: '#EF4444',
+                    animation: `${iconHover} 0.3s ease`,
+                  },
+                }}
+              >
+                <LogoutIcon sx={{ fontSize: 20 }} />
+              </IconButton>
+            </Tooltip>
           </Stack>
         </Box>
 
-         <Box sx={{ mt: 5, animation: `${fadeInUp} 0.6s ease-out 0.3s both` }}>
-          <Divider sx={{ mb: 4, borderColor: 'rgba(255,255,255,0.1)' }} />
-         
+        {/* Analytics Section */}
+        <Box sx={{ 
+          animation: mounted ? `${fadeInUp} 0.5s ease-out 0.1s both` : 'none',
+          mb: 3,
+        }}>
           <ExpenseAnalytics />
         </Box>
 
-      
-        {/* Main Content Grid (Chart and List) */}
-         <ExpenseList onEditExpense={handleOpenEdit} />
-       
+        {/* Expense List */}
+        <Box sx={{ 
+          animation: mounted ? `${fadeInUp} 0.5s ease-out 0.2s both` : 'none',
+        }}>
+          <ExpenseList onEditExpense={handleOpenEdit} />
+        </Box>
 
-
-        {/* Analytics Section */}
-       
       </Container>
 
       {/* Floating Action Button */}
-      <Tooltip title="Add New Expense" placement="left">
+      <Tooltip title="Add New Expense">
         <Fab
-          color="primary"
           onClick={handleOpenAdd}
+          size="medium"
           sx={{
             position: 'fixed',
-            bottom: { xs: 24, md: 32 },
-            right: { xs: 16, md: 32 },
+            bottom: 20,
+            right: 20,
             background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-            boxShadow: '0 8px 32px rgba(139,92,246,0.3)',
-            transition: 'all 0.3s ease',
-            zIndex: 1000,
+            animation: `${subtlePulse} 2s ease-in-out infinite`,
             '&:hover': {
-              boxShadow: '0 12px 48px rgba(139,92,246,0.4)',
               transform: 'scale(1.1)',
-              background: 'linear-gradient(135deg, #7C3AED 0%, #EC4899 100%)',
             },
           }}
         >
-          <AddIcon sx={{ fontSize: 28 }} />
+          <AddIcon />
         </Fab>
       </Tooltip>
 
-      {/* Dialogs - Expense Form */}
+      {/* Logout Menu */}
+      <Menu
+        anchorEl={logoutAnchor}
+        open={Boolean(logoutAnchor)}
+        onClose={handleLogoutClose}
+        PaperProps={{
+          sx: {
+            background: 'rgba(15, 23, 42, 0.95)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: 2,
+            mt: 1,
+            '& .MuiMenuItem-root': {
+              color: '#fff',
+              fontSize: '0.875rem',
+              '&:hover': {
+                background: 'rgba(255,255,255,0.05)',
+              },
+            },
+          },
+        }}
+      >
+        <MenuItem onClick={handleLogoutClose}>
+          <PersonIcon sx={{ mr: 1, fontSize: 18 }} />
+          Profile
+        </MenuItem>
+        <MenuItem 
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          sx={{
+            color: '#EF4444',
+          }}
+        >
+          <LogoutIcon sx={{ mr: 1, fontSize: 18 }} />
+          {isLoggingOut ? 'Logging out...' : 'Logout'}
+        </MenuItem>
+      </Menu>
+
+      {/* Dialogs */}
       <Dialog
         open={isExpenseDialogOpen}
         onClose={handleCloseExpenseDialog}
@@ -208,14 +323,12 @@ export default function Dashboard() {
         fullWidth
         PaperProps={{
           sx: {
-            background: 'rgba(24,24,27,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(139,92,246,0.12)',
-            borderRadius: isMobile ? 0 : 3,
+            background: '#1e293b',
+            borderRadius: isMobile ? 0 : 2,
           },
         }}
       >
-        <DialogContent sx={{ p: { xs: 2, md: 4 } }}>
+        <DialogContent sx={{ p: { xs: 2, md: 3 } }}>
           <ExpenseForm
             onClose={handleCloseExpenseDialog}
             expenseToEdit={expenseToEdit}
@@ -223,7 +336,6 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialogs - Category Manager */}
       <Dialog
         open={isCategoryOpen}
         onClose={() => setCategoryOpen(false)}
@@ -231,14 +343,12 @@ export default function Dashboard() {
         maxWidth="sm"
         PaperProps={{
           sx: {
-            background: 'rgba(24,24,27,0.9)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(139,92,246,0.12)',
-            borderRadius: 3,
+            background: '#1e293b',
+            borderRadius: 2,
           },
         }}
       >
-        <DialogContent sx={{ p: 4 }}>
+        <DialogContent sx={{ p: 3 }}>
           <CategoryManager />
         </DialogContent>
       </Dialog>

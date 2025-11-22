@@ -37,6 +37,7 @@ function calculateMetrics(expenses: Expense[]) {
   
   const catCounts: Record<string, number> = {};
   expenses.forEach(e => {
+    // Safely access nested category name
     const name = (e as any).categories?.name || 'Uncategorized';
     catCounts[name] = (catCounts[name] || 0) + 1;
   });
@@ -80,38 +81,39 @@ const COLORS = ['#8B5CF6', '#EC4899', '#10B981', '#F59E0B', '#3B82F6', '#6366F1'
 
 // --- Components ---
 
+// COMPACT StatCard
 const StatCard = ({ title, value, subValue, icon, color }: any) => (
   <Paper
     elevation={0}
     sx={{
-      p: 3,
+      p: 2, // Reduced padding
       height: '100%',
-      minHeight: 140, // Ensure consistent height
-      borderRadius: 3,
+      minHeight: 120, // Reduced minHeight
+      borderRadius: 2, // Slightly smaller border radius
       border: '1px solid',
       borderColor: alpha(color, 0.2),
       background: `linear-gradient(135deg, ${alpha(color, 0.05)} 0%, ${alpha(color, 0.01)} 100%)`,
       transition: 'transform 0.2s, box-shadow 0.2s',
       '&:hover': {
-        transform: 'translateY(-4px)',
-        boxShadow: `0 10px 30px -10px ${alpha(color, 0.3)}`
+        transform: 'translateY(-2px)', // Smaller lift on hover
+        boxShadow: `0 8px 25px -8px ${alpha(color, 0.3)}`
       }
     }}
   >
-    <Stack direction="row" alignItems="flex-start" justifyContent="space-between" mb={2}>
-      <Avatar variant="rounded" sx={{ bgcolor: alpha(color, 0.15), color: color, width: 48, height: 48 }}>
+    <Stack direction="row" alignItems="flex-start" justifyContent="space-between" mb={1}> {/* Reduced bottom margin */}
+      <Avatar variant="rounded" sx={{ bgcolor: alpha(color, 0.15), color: color, width: 40, height: 40 }}> {/* Smaller Avatar */}
         {icon}
       </Avatar>
       {subValue && (
-        <Typography variant="caption" sx={{ color: alpha(color, 0.8), fontWeight: 600, bgcolor: alpha(color, 0.1), px: 1, py: 0.5, borderRadius: 1 }}>
+        <Typography variant="caption" sx={{ color: alpha(color, 0.8), fontWeight: 600, bgcolor: alpha(color, 0.1), px: 0.8, py: 0.3, borderRadius: 1 }}> {/* Reduced subValue padding */}
           {subValue}
         </Typography>
       )}
     </Stack>
-    <Typography variant="body2" color="text.secondary" fontWeight={600} gutterBottom>
+    <Typography variant="caption" color="text.secondary" fontWeight={600} gutterBottom> {/* Smaller title variant */}
       {title}
     </Typography>
-    <Typography variant="h4" fontWeight={700} sx={{ color: '#fff', fontFamily: 'monospace', letterSpacing: '-1px' }}>
+    <Typography variant="h5" fontWeight={700} sx={{ color: '#fff', fontFamily: 'monospace', letterSpacing: '-1px' }}> {/* Slightly smaller value variant */}
       {value}
     </Typography>
   </Paper>
@@ -120,8 +122,8 @@ const StatCard = ({ title, value, subValue, icon, color }: any) => (
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <Box sx={{ bgcolor: 'rgba(15, 23, 42, 0.9)', p: 1.5, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2, backdropFilter: 'blur(4px)' }}>
-        <Typography variant="caption" color="text.secondary" display="block" mb={0.5}>{label}</Typography>
+      <Box sx={{ bgcolor: 'rgba(15, 23, 42, 0.9)', p: 1, border: '1px solid rgba(255,255,255,0.1)', borderRadius: 1, backdropFilter: 'blur(4px)' }}> {/* Reduced padding/border radius */}
+        <Typography variant="caption" color="text.secondary" display="block" mb={0.3}>{label}</Typography>
         <Typography variant="body2" fontWeight={700} color="#fff">
           ₹{Number(payload[0].value).toLocaleString()}
         </Typography>
@@ -139,25 +141,13 @@ export default function ExpenseAnalytics() {
   const monthlyData = useMemo(() => getMonthlyData(expenses), [expenses]);
 
   return (
-    <Box sx={{ mb: 6, mt: 2 }}>
+    <Box sx={{ mb: 4, mt: 1 }}> {/* Reduced margins */}
       
-      {/* Header */}
-      {/* <Stack direction="row" alignItems="center" spacing={2} mb={4}>
-        <Box>
-          <Typography variant="h4" fontWeight={800} sx={{ background: 'linear-gradient(to right, #fff, rgba(255,255,255,0.5))', webkitBackgroundClip: 'text', webkitTextFillColor: 'transparent' }}>
-            Financial Overview
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            Real-time metrics and spending analysis
-          </Typography>
-        </Box>
-      </Stack> */}
-
-      {/* 1. Top Stats Row (Replaced Grid with Stack) */}
+      {/* 1. Top Stats Row */}
       <Stack 
         direction={{ xs: 'column', md: 'row' }} 
-        spacing={3} 
-        mb={4}
+        spacing={2} // Reduced spacing
+        mb={3} // Reduced margin bottom
       >
         <Box flex={1}>
           <StatCard 
@@ -194,23 +184,23 @@ export default function ExpenseAnalytics() {
         </Box>
       </Stack>
 
-      {/* 2. Charts Row (Replaced Grid with Stack) */}
+      {/* 2. Charts Row */}
       <Stack 
         direction={{ xs: 'column', lg: 'row' }} 
-        spacing={3}
+        spacing={2} // Reduced spacing
       >
         
-        {/* Monthly Trend (Takes more space on large screens) */}
+        {/* Monthly Trend */}
         <Box flex={2}>
-          <Paper sx={{ p: 3, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', height: '100%' }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={4}>
+          <Paper sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', height: '100%' }}> {/* Reduced padding/border radius */}
+            <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}> {/* Reduced margin bottom */}
               <Box>
-                <Typography variant="h6" fontWeight={700}>Spending Trend</Typography>
+                <Typography variant="subtitle1" fontWeight={700}>Spending Trend</Typography> {/* Smaller title variant */}
                 <Typography variant="caption" color="text.secondary">Monthly aggregation</Typography>
               </Box>
             </Stack>
             
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={250}> {/* Reduced height */}
               <AreaChart data={monthlyData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
@@ -223,20 +213,20 @@ export default function ExpenseAnalytics() {
                   dataKey="name" 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} // Smaller font size
                   dy={10}
                 />
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 12 }} 
+                  tick={{ fill: 'rgba(255,255,255,0.4)', fontSize: 10 }} // Smaller font size
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 2 }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
                 <Area 
                   type="monotone" 
                   dataKey="value" 
                   stroke="#8B5CF6" 
-                  strokeWidth={3}
+                  strokeWidth={2} // Slightly thinner line
                   fillOpacity={1} 
                   fill="url(#colorValue)" 
                 />
@@ -247,19 +237,19 @@ export default function ExpenseAnalytics() {
 
         {/* Category Breakdown */}
         <Box flex={1}>
-          <Paper sx={{ p: 3, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', height: '100%' }}>
-            <Typography variant="h6" fontWeight={700} mb={3}>Categories</Typography>
+          <Paper sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', height: '100%' }}> {/* Reduced padding/border radius */}
+            <Typography variant="subtitle1" fontWeight={700} mb={2}>Categories</Typography> {/* Smaller title variant, reduced margin */}
             
-            <Box sx={{ height: 200, position: 'relative' }}>
+            <Box sx={{ height: 180, position: 'relative' }}> {/* Reduced height */}
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
                     data={categoryData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
-                    paddingAngle={5}
+                    innerRadius={50} // Smaller radius
+                    outerRadius={70} // Smaller radius
+                    paddingAngle={3} // Smaller padding angle
                     dataKey="value"
                     stroke="none"
                   >
@@ -269,29 +259,29 @@ export default function ExpenseAnalytics() {
                   </Pie>
                   <Tooltip content={<CustomTooltip />} />
                 </PieChart>
+                
+                <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
+                  <Typography variant="caption" color="text.secondary">Total</Typography>
+                  <Typography variant="body1" fontWeight={700}>₹{metrics.total > 1000 ? `${(metrics.total/1000).toFixed(1)}k` : metrics.total}</Typography> {/* Smaller value variant */}
+                </Box>
               </ResponsiveContainer>
-              
-              <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center' }}>
-                <Typography variant="caption" color="text.secondary">Total</Typography>
-                <Typography variant="h6" fontWeight={700}>₹{metrics.total > 1000 ? `${(metrics.total/1000).toFixed(1)}k` : metrics.total}</Typography>
-              </Box>
             </Box>
 
-            <Stack spacing={2} mt={2} sx={{ maxHeight: 150, overflowY: 'auto', pr: 1 }}>
+            <Stack spacing={1} mt={2} sx={{ maxHeight: 150, overflowY: 'auto', pr: 0.5 }}> {/* Reduced spacing/padding */}
               {categoryData.map((entry, index) => (
                 <Box key={entry.name}>
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: COLORS[index % COLORS.length] }} />
-                      <Typography variant="body2" color="text.secondary">{entry.name}</Typography>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.3}> {/* Reduced margin bottom */}
+                    <Stack direction="row" alignItems="center" spacing={0.5}> {/* Reduced spacing */}
+                      <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: COLORS[index % COLORS.length] }} /> {/* Smaller indicator */}
+                      <Typography variant="caption" color="text.secondary">{entry.name}</Typography> {/* Smaller text variant */}
                     </Stack>
-                    <Typography variant="body2" fontWeight={600}>₹{entry.value.toFixed(0)}</Typography>
+                    <Typography variant="caption" fontWeight={600}>₹{entry.value.toFixed(0)}</Typography> {/* Smaller text variant */}
                   </Stack>
                   <LinearProgress 
                     variant="determinate" 
                     value={(entry.value / metrics.total) * 100} 
                     sx={{ 
-                      height: 4, 
+                      height: 3, // Thinner progress bar
                       borderRadius: 2, 
                       bgcolor: 'rgba(255,255,255,0.05)',
                       '& .MuiLinearProgress-bar': { bgcolor: COLORS[index % COLORS.length] }
