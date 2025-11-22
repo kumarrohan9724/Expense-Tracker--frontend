@@ -14,8 +14,6 @@ import {
   Divider,
   IconButton,
   Avatar,
-  Menu,
-  MenuItem,
 } from '@mui/material';
 import { keyframes } from '@emotion/react';
 
@@ -24,7 +22,6 @@ import AddIcon from '@mui/icons-material/AddRounded';
 import CategoryIcon from '@mui/icons-material/CategoryRounded';
 import TrendingUpIcon from '@mui/icons-material/TrendingUpRounded';
 import LogoutIcon from '@mui/icons-material/LogoutRounded';
-import PersonIcon from '@mui/icons-material/PersonRounded';
 
 // Components
 import ExpenseList from '../components/Expenses/ExpenseList';
@@ -36,7 +33,7 @@ import { useExpenses } from '../hooks/useExpenses';
 // Supabase
 import { supabase } from '../services/supabaseClient';
 
-// Clean Animations
+// Animations
 const fadeInUp = keyframes`
   from { 
     opacity: 0; 
@@ -53,22 +50,6 @@ const subtlePulse = keyframes`
   50% { transform: scale(1.02); }
 `;
 
-const slideInRight = keyframes`
-  from { 
-    opacity: 0; 
-    transform: translateX(15px);
-  }
-  to { 
-    opacity: 1; 
-    transform: translateX(0);
-  }
-`;
-
-const textShimmer = keyframes`
-  0% { background-position: -100% 0; }
-  100% { background-position: 100% 0; }
-`;
-
 const iconHover = keyframes`
   0% { transform: rotate(0deg); }
   25% { transform: rotate(-5deg); }
@@ -76,20 +57,25 @@ const iconHover = keyframes`
   100% { transform: rotate(0deg); }
 `;
 
-// ---
-// Dashboard Component (Main)
-// ---
+const textShimmer = keyframes`
+  0% { background-position: -100% 0; }
+  100% { background-position: 100% 0; }
+`;
+
+// -------------------------
+// MAIN COMPONENT
+// -------------------------
 export default function Dashboard() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const { data: expenses = [] } = useExpenses();
 
-  // State Management
+  // UI State
   const [isExpenseDialogOpen, setExpenseDialogOpen] = useState(false);
   const [isCategoryOpen, setCategoryOpen] = useState(false);
   const [expenseToEdit, setExpenseToEdit] = useState<any>(null);
   const [mounted, setMounted] = useState(false);
-  const [logoutAnchor, setLogoutAnchor] = useState<null | HTMLElement>(null);
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
@@ -112,14 +98,7 @@ export default function Dashboard() {
     setTimeout(() => setExpenseToEdit(null), 200);
   };
 
-  const handleLogoutClick = (event: React.MouseEvent<HTMLElement>) => {
-    setLogoutAnchor(event.currentTarget);
-  };
-
-  const handleLogoutClose = () => {
-    setLogoutAnchor(null);
-  };
-
+  // 🚀 Logout happens instantly
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await supabase.auth.signOut();
@@ -141,7 +120,7 @@ export default function Dashboard() {
         sx={{ px: { xs: 2, sm: 3, md: 4 } }}
       >
         
-        {/* Compact Clean Header */}
+        {/* Header */}
         <Box
           sx={{
             display: 'flex',
@@ -151,14 +130,8 @@ export default function Dashboard() {
             animation: mounted ? `${fadeInUp} 0.5s ease-out` : 'none',
           }}
         >
-          {/* Left: Logo and Title */}
-          <Box 
-            sx={{ 
-              display: 'flex', 
-              alignItems: 'center', 
-              gap: 2,
-            }}
-          >
+          {/* Left Branding */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Avatar
               sx={{
                 background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
@@ -169,6 +142,7 @@ export default function Dashboard() {
             >
               <TrendingUpIcon sx={{ fontSize: 20 }} />
             </Avatar>
+
             <Box>
               <Typography
                 variant="h5"
@@ -184,20 +158,16 @@ export default function Dashboard() {
               >
                 FinTrack
               </Typography>
-              <Typography 
-                variant="caption" 
-                sx={{ 
-                  color: 'rgba(255,255,255,0.6)',
-                }}
-              >
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.6)' }}>
                 Track your expenses
               </Typography>
             </Box>
           </Box>
 
-          {/* Right: Action Buttons */}
+          {/* Right Buttons */}
           <Stack direction="row" spacing={1}>
-            {/* Categories Button */}
+
+            {/* Category Button */}
             <Tooltip title="Manage Categories">
               <IconButton
                 onClick={() => setCategoryOpen(true)}
@@ -217,10 +187,11 @@ export default function Dashboard() {
               </IconButton>
             </Tooltip>
 
-            {/* Logout Button */}
+            {/* 🚀 Instant Logout Button */}
             <Tooltip title="Logout">
               <IconButton
-                onClick={handleLogoutClick}
+                onClick={handleLogout}
+                disabled={isLoggingOut}
                 size="small"
                 sx={{
                   color: 'rgba(255,255,255,0.8)',
@@ -236,27 +207,23 @@ export default function Dashboard() {
                 <LogoutIcon sx={{ fontSize: 20 }} />
               </IconButton>
             </Tooltip>
+
           </Stack>
         </Box>
 
-        {/* Analytics Section */}
-        <Box sx={{ 
-          animation: mounted ? `${fadeInUp} 0.5s ease-out 0.1s both` : 'none',
-          mb: 3,
-        }}>
+        {/* Analytics */}
+        <Box sx={{ animation: mounted ? `${fadeInUp} 0.5s ease-out 0.1s both` : 'none', mb: 3 }}>
           <ExpenseAnalytics />
         </Box>
 
-        {/* Expense List */}
-        <Box sx={{ 
-          animation: mounted ? `${fadeInUp} 0.5s ease-out 0.2s both` : 'none',
-        }}>
+        {/* List */}
+        <Box sx={{ animation: mounted ? `${fadeInUp} 0.5s ease-out 0.2s both` : 'none' }}>
           <ExpenseList onEditExpense={handleOpenEdit} />
         </Box>
 
       </Container>
 
-      {/* Floating Action Button */}
+      {/* Add FAB */}
       <Tooltip title="Add New Expense">
         <Fab
           onClick={handleOpenAdd}
@@ -267,54 +234,14 @@ export default function Dashboard() {
             right: 20,
             background: 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
             animation: `${subtlePulse} 2s ease-in-out infinite`,
-            '&:hover': {
-              transform: 'scale(1.1)',
-            },
+            '&:hover': { transform: 'scale(1.1)' },
           }}
         >
           <AddIcon />
         </Fab>
       </Tooltip>
 
-      {/* Logout Menu */}
-      <Menu
-        anchorEl={logoutAnchor}
-        open={Boolean(logoutAnchor)}
-        onClose={handleLogoutClose}
-        PaperProps={{
-          sx: {
-            background: 'rgba(15, 23, 42, 0.95)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            borderRadius: 2,
-            mt: 1,
-            '& .MuiMenuItem-root': {
-              color: '#fff',
-              fontSize: '0.875rem',
-              '&:hover': {
-                background: 'rgba(255,255,255,0.05)',
-              },
-            },
-          },
-        }}
-      >
-        <MenuItem onClick={handleLogoutClose}>
-          <PersonIcon sx={{ mr: 1, fontSize: 18 }} />
-          Profile
-        </MenuItem>
-        <MenuItem 
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          sx={{
-            color: '#EF4444',
-          }}
-        >
-          <LogoutIcon sx={{ mr: 1, fontSize: 18 }} />
-          {isLoggingOut ? 'Logging out...' : 'Logout'}
-        </MenuItem>
-      </Menu>
-
-      {/* Dialogs */}
+      {/* Expense Dialog */}
       <Dialog
         open={isExpenseDialogOpen}
         onClose={handleCloseExpenseDialog}
@@ -336,6 +263,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
+      {/* Category Dialog */}
       <Dialog
         open={isCategoryOpen}
         onClose={() => setCategoryOpen(false)}
@@ -352,6 +280,7 @@ export default function Dashboard() {
           <CategoryManager />
         </DialogContent>
       </Dialog>
+
     </Box>
   );
 }
